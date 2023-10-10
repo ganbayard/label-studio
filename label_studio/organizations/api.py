@@ -163,48 +163,48 @@ class OrganizationAPI(generics.RetrieveUpdateAPIView):
         return super(OrganizationAPI, self).put(request, *args, **kwargs)
 
 
-@method_decorator(
-    name='get',
-    decorator=swagger_auto_schema(
-        tags=['Invites'],
-        operation_summary='Get organization invite link',
-        operation_description='Get a link to use to invite a new member to an organization in Label Studio Enterprise.',
-        responses={200: OrganizationInviteSerializer()},
-    ),
-)
-class OrganizationInviteAPI(generics.RetrieveAPIView):
-    parser_classes = (JSONParser,)
-    queryset = Organization.objects.all()
-    permission_required = all_permissions.organizations_change
+# @method_decorator(
+#     name='get',
+#     decorator=swagger_auto_schema(
+#         tags=['Invites'],
+#         operation_summary='Get organization invite link',
+#         operation_description='Get a link to use to invite a new member to an organization in Label Studio Enterprise.',
+#         responses={200: OrganizationInviteSerializer()},
+#     ),
+# )
+# class OrganizationInviteAPI(generics.RetrieveAPIView):
+#     parser_classes = (JSONParser,)
+#     queryset = Organization.objects.all()
+#     permission_required = all_permissions.organizations_change
 
-    def get(self, request, *args, **kwargs):
-        org = request.user.active_organization
-        invite_url = '{}?token={}'.format(reverse('user-signup'), org.token)
-        if hasattr(settings, 'FORCE_SCRIPT_NAME') and settings.FORCE_SCRIPT_NAME:
-            invite_url = invite_url.replace(settings.FORCE_SCRIPT_NAME, '', 1)
-        serializer = OrganizationInviteSerializer(data={'invite_url': invite_url, 'token': org.token})
-        serializer.is_valid()
-        return Response(serializer.data, status=200)
+#     def get(self, request, *args, **kwargs):
+#         org = request.user.active_organization
+#         invite_url = '{}?token={}'.format(reverse('user-signup'), org.token)
+#         if hasattr(settings, 'FORCE_SCRIPT_NAME') and settings.FORCE_SCRIPT_NAME:
+#             invite_url = invite_url.replace(settings.FORCE_SCRIPT_NAME, '', 1)
+#         serializer = OrganizationInviteSerializer(data={'invite_url': invite_url, 'token': org.token})
+#         serializer.is_valid()
+#         return Response(serializer.data, status=200)
 
 
-@method_decorator(
-    name='post',
-    decorator=swagger_auto_schema(
-        tags=['Invites'],
-        operation_summary='Reset organization token',
-        operation_description='Reset the token used in the invitation link to invite someone to an organization.',
-        responses={200: OrganizationInviteSerializer()},
-    ),
-)
-class OrganizationResetTokenAPI(APIView):
-    permission_required = all_permissions.organizations_invite
-    parser_classes = (JSONParser,)
+# @method_decorator(
+#     name='post',
+#     decorator=swagger_auto_schema(
+#         tags=['Invites'],
+#         operation_summary='Reset organization token',
+#         operation_description='Reset the token used in the invitation link to invite someone to an organization.',
+#         responses={200: OrganizationInviteSerializer()},
+#     ),
+# )
+# class OrganizationResetTokenAPI(APIView):
+#     permission_required = all_permissions.organizations_invite
+#     parser_classes = (JSONParser,)
 
-    def post(self, request, *args, **kwargs):
-        org = request.user.active_organization
-        org.reset_token()
-        logger.debug(f'New token for organization {org.pk} is {org.token}')
-        invite_url = '{}?token={}'.format(reverse('user-signup'), org.token)
-        serializer = OrganizationInviteSerializer(data={'invite_url': invite_url, 'token': org.token})
-        serializer.is_valid()
-        return Response(serializer.data, status=201)
+#     def post(self, request, *args, **kwargs):
+#         org = request.user.active_organization
+#         org.reset_token()
+#         logger.debug(f'New token for organization {org.pk} is {org.token}')
+#         invite_url = '{}?token={}'.format(reverse('user-signup'), org.token)
+#         serializer = OrganizationInviteSerializer(data={'invite_url': invite_url, 'token': org.token})
+#         serializer.is_valid()
+#         return Response(serializer.data, status=201)

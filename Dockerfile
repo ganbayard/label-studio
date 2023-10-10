@@ -46,9 +46,29 @@ RUN set -eux; \
     curl -sSL https://nginx.org/keys/nginx_signing.key | apt-key add - && \
     echo "deb https://nginx.org/packages/mainline/ubuntu/ $(lsb_release -cs) nginx" >> /etc/apt/sources.list && \
     apt-get update && apt-get install -y nginx && \
+    apt-get update -y && apt-get install -y apache2-utils && \
     apt-get purge --assume-yes --auto-remove --option APT::AutoRemove::RecommendsImportant=false \
      --option APT::AutoRemove::SuggestsImportant=false && rm -rf /var/lib/apt/lists/* /tmp/* && \
     nginx -v
+
+ENV BASIC_USERNAME=ocradmin
+ENV BASIC_PASSWORD=AiRookies
+
+ENV FORWARD_HOST=google.com
+ENV FORWARD_PORT=80
+
+USER root
+RUN echo "root:root-password" | chpasswd
+
+RUN apt-get update && apt-get install -y apache2-utils
+
+RUN htpasswd -c -b /tmp/.htpasswd $BASIC_USERNAME $BASIC_PASSWORD
+RUN mv /tmp/.htpasswd /etc/nginx/.htpasswd
+
+USER 1001
+
+# ADD basic_auth.conf /etc/nginx/conf.d/basic_auth.conf
+# ADD default.conf /etc/nginx/sites-available/default.conf
 
 COPY --chown=1001:0 deploy/default.conf /etc/nginx/nginx.conf
 
