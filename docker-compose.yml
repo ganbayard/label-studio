@@ -12,6 +12,8 @@ services:
     environment:
       - LABEL_STUDIO_HOST=${LABEL_STUDIO_HOST:-}
       - LABEL_STUDIO_DISABLE_SIGNUP_WITHOUT_LINK=true
+      - LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED=true
+      - LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT=/label-studio/files
       - BASIC_USERNAME=ocradmin
       - BASIC_PASSWORD=AiRookies
     #   Optional: Specify SSL termination certificate & key
@@ -20,6 +22,7 @@ services:
     #      - NGINX_SSL_CERT_KEY=/certs/cert.key
     volumes:
       - ./mydata:/label-studio/data:rw
+      - ./myfiles:/label-studio/files:rw
       - ./deploy/nginx/certs:/certs:ro
       - ./deploy/.htpasswd:/etc/nginx/.htpasswd
       - ./deploy/default.conf:/etc/nginx/nginx.conf
@@ -48,10 +51,13 @@ services:
       - POSTGRE_HOST=db
       - LABEL_STUDIO_HOST=${LABEL_STUDIO_HOST:-}
       - LABEL_STUDIO_DISABLE_SIGNUP_WITHOUT_LINK=true
+      - LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED=true
+      - LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT=/label-studio/files
       - JSON_LOG=1
     #      - LOG_LEVEL=DEBUG
     volumes:
       - ./mydata:/label-studio/data:rw
+      - ./myfiles:/label-studio/files:rw
       - ./label_studio/organizations:/label-studio/label_studio/organizations
     command: label-studio-uwsgi
 
